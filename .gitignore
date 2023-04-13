@@ -26,4 +26,6 @@ yarn-error.log*
 README.md
 
 /src/features/counter
-# *.test.tsx
+/src/*.test.tsx
+/src/reportWebVitals.ts
+/src/setupTests.ts
