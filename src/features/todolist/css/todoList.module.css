@@ -1,0 +1,19 @@
+.container {
+  height: 100vh;
+  padding: 5rem 0;
+  box-sizing: border-box;
+}
+.container .generator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 30px;
+}
+.container .generator .select_date,
+.container .generator .create_btn {
+  height: 30px;
+}
+.container table {
+  margin: auto;
+}/*# sourceMappingURL=todoList.module.css.map */

@@ -1,0 +1,24 @@
+.container {
+  height: 100vh;
+  padding: 5rem 0;
+
+  box-sizing: border-box;
+
+  .generator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 1rem;
+    margin-bottom: 30px;
+
+    .select_date,
+    .create_btn {
+      height: 30px;
+    }
+  }
+
+  table {
+    margin: auto;
+  }
+}
