@@ -1,11 +1,21 @@
-export function addFetcher() {
-  return new Promise(() => {
-    setTimeout(() => console.log("add complete!"), 500);
+export async function addFetcher() {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      console.log("add complete!");
+      resolve(true);
+    }, 500);
+  }).catch(() => {
+    console.error("add failed!");
   });
 }
 
-export function deleteFetcher() {
-  return new Promise(() => {
-    setTimeout(() => console.log("delete complete!"), 500);
+export async function deleteFetcher() {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      console.log("delete complete!");
+      resolve(true);
+    }, 500);
+  }).catch(() => {
+    console.error("add failed!");
   });
 }
