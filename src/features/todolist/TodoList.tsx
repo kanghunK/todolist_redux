@@ -1,25 +1,28 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import styles from "./css/todoList.module.css";
-
-const dummyData: any[] = [];
-
-// { date: "2023-04-11", type: "work", content: "첫 번째 할일입니다." },
-// { date: "2023-04-11", type: "hobby", content: "두 번째 할일입니다." },
-// { date: "2023-04-11", type: "friend", content: "세 번쨰 할일입니다." },
-interface Content {
-  date: string;
-  content: string;
-}
+import { useDispatch, useSelector } from "react-redux";
+import {
+  Content,
+  addListAsync,
+  deleteListAsync,
+  todoListState,
+} from "./todoListSlice";
+import { AppDispatch } from "../../app/store";
+import { Spinner } from "react-bootstrap";
 
 const TodoList = () => {
-  const [contentList, setContentList] = useState<Content[]>([]);
+  const { workState, workType, dataList, listNumber } = useSelector(
+    (state: todoListState) => state
+  );
+  const dispatch = useDispatch<AppDispatch>();
+
   const dateRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLTextAreaElement>(null);
 
-  const createList = () => {
+  const createList = async () => {
     const dateString = dateRef.current?.value;
     const contentString = contentRef.current!.value;
-    console.log(dateString, contentString);
+
     if (!dateString) {
       alert("날짜를 선택하세요");
       return;
@@ -28,11 +31,18 @@ const TodoList = () => {
       return;
     }
 
-    setContentList((prev) => [
-      ...prev,
-      { date: dateString, content: contentString },
-    ]);
+    if (listNumber >= 10) {
+      alert("10개를 초과해서서 생성할 수 없습니다.");
+      return;
+    }
+
+    await dispatch(addListAsync({ date: dateString, content: contentString }));
   };
+
+  const deleteContent =
+    (order: number) => async (e: React.MouseEvent<HTMLButtonElement>) => {
+      await dispatch(deleteListAsync(order));
+    };
 
   return (
     <div className={styles.container}>
@@ -40,7 +50,7 @@ const TodoList = () => {
         <input type="date" className={styles.select_date} ref={dateRef} />
         <textarea
           name="text_content"
-          id="textContent"
+          className={styles.text_content}
           cols={30}
           rows={10}
           ref={contentRef}
@@ -52,6 +62,11 @@ const TodoList = () => {
         >
           생성하기
         </button>
+        {workType === "add" && workState === "loading" && (
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        )}
       </div>
       <table>
         <colgroup>
@@ -61,18 +76,30 @@ const TodoList = () => {
         </colgroup>
         <thead>
           <tr>
-            <th scope="col">순서</th>
+            <th scope="col">
+              {workType === "add" && workState === "loading" && (
+                <Spinner animation="border" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
+              )}
+              순서
+            </th>
             <th scope="col">날짜</th>
             <th scope="col">내용</th>
           </tr>
         </thead>
         <tbody>
-          {contentList.length !== 0 ? (
-            contentList.map((listData, i) => (
+          {dataList.length !== 0 ? (
+            dataList.map((listData, i) => (
               <tr key={`${i}+${listData.content}`}>
                 <th>{i + 1}</th>
                 <td>{listData.date}</td>
-                <td>{listData.content}</td>
+                <td>
+                  {listData.content}
+                  <button type="button" onClick={deleteContent(listData.order)}>
+                    X
+                  </button>
+                </td>
               </tr>
             ))
           ) : (
