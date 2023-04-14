@@ -14,6 +14,9 @@
 .container .generator .create_btn {
   height: 30px;
 }
+.container .generator .text_content {
+  resize: none;
+}
 .container table {
   margin: auto;
 }/*# sourceMappingURL=todoList.module.css.map */
