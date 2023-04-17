@@ -1,22 +1,159 @@
 .container {
-  height: 100vh;
-  padding: 5rem 0;
+  padding: 2rem 0;
   box-sizing: border-box;
 }
 .container .generator {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  max-width: 850px;
+  min-width: 350px;
+  margin: 30px auto;
+  background-color: white;
+  box-shadow: 6px 7px 5px 1px;
+  border-radius: 10px;
+}
+.container .generator .generator_header {
+  position: relative;
+  background: #f9f9f9;
+  width: 100%;
+  padding: 10px 30px;
+  border-top: 4px solid #ccc;
+  border-bottom: 1px solid #eee;
+  border-radius: 10px;
+  color: #999;
+}
+.container .generator .generator_header h2 {
+  display: inline-block;
+  font-size: 1.2rem;
+}
+.container .generator .generator_header .generator_loading {
+  position: absolute;
+  right: 30px;
+}
+.container .generator .generator_content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 20px 0;
   gap: 1rem;
-  margin-bottom: 30px;
 }
-.container .generator .select_date,
-.container .generator .create_btn {
-  height: 30px;
+.container .generator .generator_content > div {
+  display: flex;
+  margin-left: 50px;
 }
-.container .generator .text_content {
+.container .generator .generator_content > div label {
+  margin-right: 1rem;
+}
+.container .generator .generator_content .select_date {
+  width: 120px;
+}
+.container .generator .generator_content .btn_wrapper {
+  justify-content: right;
+}
+.container .generator .generator_content .btn_wrapper .create_btn {
+  width: 100px;
+  margin-right: 30px;
+}
+.container .generator .generator_content .text_content {
+  width: 50%;
+  height: 70px;
   resize: none;
 }
-.container table {
+.container .rwd-table {
+  table-layout: fixed;
+  width: 100%;
+  max-width: 850px;
+  min-width: 350px;
   margin: auto;
+  overflow: hidden;
+  color: #fff;
+  background: #34495e;
+  border-radius: 10px;
+  box-shadow: 6px 7px 5px 1px black;
+}
+.container .rwd-table tr {
+  height: 70px;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  border-color: #46637f;
+}
+.container .rwd-table tr .generator_loading {
+  position: absolute;
+  left: -20px;
+  top: 36%;
+  width: 25px;
+  height: 25px;
+}
+.container .rwd-table th {
+  display: none;
+}
+.container .rwd-table td.manage_btn {
+  position: relative;
+  padding-right: 1rem;
+}
+.container .rwd-table td.manage_btn button:first-of-type {
+  margin-right: 10px;
+}
+.container .rwd-table td.v_td {
+  display: block;
+  text-align: left;
+  margin: 0.5em 1em;
+}
+.container .rwd-table td.v_td:first-of-type {
+  padding-top: 0.5em;
+}
+.container .rwd-table td.v_td.last {
+  padding-bottom: 0.5em;
+}
+.container .rwd-table td.v_td:before {
+  content: attr(data-th) ": ";
+  display: inline-block;
+  width: 3.5em;
+  font-weight: bold;
+}
+.container .rwd-table th,
+.container .rwd-table td:before {
+  color: #dd5;
+}
+
+body {
+  padding: 0 2em;
+  font-family: Montserrat, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  color: #444;
+  background: #eee;
+}
+@media screen and (min-width: 350px) {
+  body {
+    padding: 0 4rem;
+  }
+}
+
+h1 {
+  font-weight: normal;
+  letter-spacing: -1px;
+  color: #34495e;
+}
+
+@media (min-width: 820px) {
+  .container .rwd-table th,
+  .container .rwd-table td {
+    display: table-cell;
+    padding: 0.25em 0.5em;
+  }
+  .container .rwd-table td.v_td {
+    display: table-cell;
+    text-align: center;
+  }
+  .container .rwd-table td.v_td:first-of-type {
+    padding-top: 0.25em;
+  }
+  .container .rwd-table td.v_td.last {
+    padding-bottom: 0.25em;
+  }
+  .container .rwd-table td.v_td::before {
+    display: none;
+    padding: 1em !important;
+  }
 }/*# sourceMappingURL=todoList.module.css.map */
