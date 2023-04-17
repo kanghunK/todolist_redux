@@ -7,23 +7,27 @@ export interface addListAsyncParam {
 }
 
 export interface Content {
-  order: number;
-  date: string;
-  content: string;
+  order?: number;
+  date?: string;
+  content?: string;
 }
 
 export interface todoListState {
   listNumber: number;
+  generateNumber: number;
   dataList: Content[];
   workType: string;
   workState: string;
+  workDate: Content;
 }
 
 const initialState: todoListState = {
-  listNumber: 0,
-  dataList: [],
-  workType: "", // add, edit, delete
-  workState: "idle",
+  listNumber: 0, // 전체 리스트의 개수
+  generateNumber: 0, // 전체 리스트 생성 개수
+  dataList: [], // 데이터 리스트 저장
+  workType: "", // 작업 종류 add, edit, delete
+  workState: "idle", // 작업 상태
+  workDate: {}, // 작업 중인 데이터
 };
 
 export const addListAsync = createAsyncThunk<
@@ -47,55 +51,69 @@ export const todoListSlice = createSlice({
   initialState,
   reducers: {
     addList: (state) => {
-      state.listNumber += 1;
-      state.workState = "idle";
+      return {
+        ...state,
+        workType: "add",
+      };
     },
-    deleteList: (state) => {
-      state.listNumber -= 1;
-      state.workState = "idle";
+    deleteList: (state, actions) => {
+      return {
+        ...state,
+        workType: "delete",
+        workDate: { order: actions.payload.order },
+      };
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(addListAsync.pending, (state) => {
-        state.workType = "add";
-        state.workState = "loading";
+        return {
+          ...state,
+          workState: "loading",
+        };
       })
       .addCase(addListAsync.fulfilled, (state, actions) => {
-        state.workType = "idle";
-        state.workState = "success";
+        const newContent = { ...actions.payload, order: state.generateNumber };
 
-        state.listNumber += 1;
-
-        const newContent = { ...actions.payload, order: state.listNumber };
-        state.dataList = [...state.dataList, newContent];
+        return {
+          ...state,
+          workType: "idle",
+          workState: "success",
+          generateNumber: state.generateNumber + 1,
+          listNumber: state.listNumber + 1,
+          dataList: [...state.dataList, newContent],
+        };
       })
       .addCase(addListAsync.rejected, (state) => {
-        state.workType = "idle";
-        state.workState = "faild";
+        return {
+          ...state,
+          workType: "idle",
+          workState: "failed",
+        };
       })
       .addCase(deleteListAsync.pending, (state) => {
-        state.workType = "delete";
-        state.workState = "loading";
+        return {
+          ...state,
+          workState: "loading",
+        };
       })
       .addCase(deleteListAsync.fulfilled, (state, actions) => {
-        state.workType = "idle";
-        state.workState = "success";
-        state.listNumber -= 1;
-
-        const filterList = state.dataList.filter(
-          (data) => data.order !== actions.payload
-        );
-        state.dataList = filterList.map((data, i) => {
-          return {
-            ...data,
-            order: i,
-          };
-        });
+        return {
+          ...state,
+          workType: "idle",
+          workState: "success",
+          listNumber: state.listNumber - 1,
+          dataList: state.dataList.filter(
+            (data) => data.order !== actions.payload
+          ),
+        };
       })
       .addCase(deleteListAsync.rejected, (state) => {
-        state.workType = "idle";
-        state.workState = "faild";
+        return {
+          ...state,
+          workType: "idle",
+          workState: "failed",
+        };
       });
   },
 });
