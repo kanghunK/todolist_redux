@@ -33,3 +33,15 @@ $ npm run start
 
 <br>
 <br>
+
+> ### 실행 화면
+
+<br />
+
+https://github.com/kanghunK/todolist_redux/assets/72805356/76134ab7-dddd-4c16-8ded-98cf6e460744
+
+
+<br />
+<br />
+
+
