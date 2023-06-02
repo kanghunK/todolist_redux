@@ -23,7 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # gitignore 추가 파일
-README.md
 
 /src/features/counter
 /src/*.test.tsx
