@@ -189,7 +189,7 @@ const TodoList = () => {
                           <span className="visually-hidden">Loading...</span>
                         </Spinner>
                       )}
-                    {editingData ? (
+                    {editingData && editingData.order === listData.order ? (
                       <>
                         <Button
                           type="button"
