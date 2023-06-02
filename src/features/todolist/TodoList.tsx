@@ -2,10 +2,13 @@ import { useRef, useState } from "react";
 import styles from "./css/todoList.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  Content,
   addList,
   addListAsync,
   deleteList,
   deleteListAsync,
+  editList,
+  editListAsync,
   todoListState,
 } from "./todoListSlice";
 import { AppDispatch } from "../../app/store";
@@ -13,15 +16,16 @@ import { Button, Spinner } from "react-bootstrap";
 import { useMediaQuery } from "react-responsive";
 
 const TodoList = () => {
-  const { workDate, workState, workType, dataList, listNumber } = useSelector(
+  const { workData, workState, workType, dataList, listNumber } = useSelector(
     (state: todoListState) => state
   );
   const dispatch = useDispatch<AppDispatch>();
   const isBigScreen = useMediaQuery({ query: "(min-width: 820px)" });
 
-  const [title, setTitle] = useState("생성하기");
+  const [editingData, setEditingData] = useState<Content | null>(null);
   const dateRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLTextAreaElement>(null);
+  const editContentRef = useRef<HTMLTextAreaElement>(null);
 
   const createList = async () => {
     const dateString = dateRef.current?.value;
@@ -46,18 +50,30 @@ const TodoList = () => {
     contentRef.current.value = "";
   };
 
-  const deleteContent =
-    (order?: number) => async (e: React.MouseEvent<HTMLButtonElement>) => {
-      console.log(order);
-      if (order === undefined) return;
-      await dispatch(deleteList({ order }));
-      await dispatch(deleteListAsync(order));
+  const editContent =
+    (data: Content) => async (e: React.MouseEvent<HTMLButtonElement>) => {
+      setEditingData(data);
+      await dispatch(editList({ ...data }));
     };
 
-  // 수정하기를 했을 때 수정하는 모달 화면이 떠야 한다. title을 변경할 예정
-  const editContent =
-    (order?: number) => async (e: React.MouseEvent<HTMLButtonElement>) => {
-      setTitle("수정하기");
+  const onClickEditComplete = (data: Content) => async () => {
+    const contentString = editContentRef.current?.value;
+
+    if (!contentString) {
+      alert("내용을 입력하세요");
+      return;
+    }
+
+    await dispatch(editListAsync({ ...data, content: contentString }));
+    editContentRef.current.value = "";
+    setEditingData(null);
+  };
+
+  const deleteContent =
+    (data: Content) => async (e: React.MouseEvent<HTMLButtonElement>) => {
+      console.log("컨텐츠 삭제 요청");
+      await dispatch(deleteList({ ...data }));
+      await dispatch(deleteListAsync(data.order));
     };
 
   return (
@@ -150,11 +166,20 @@ const TodoList = () => {
                     data-th="내용"
                     className={`${styles.v_td} ${styles.last}`}
                   >
-                    {listData.content}
+                    {editingData && editingData.order === listData.order ? (
+                      <textarea
+                        name="text_content"
+                        cols={30}
+                        rows={3}
+                        ref={editContentRef}
+                      />
+                    ) : (
+                      listData.content
+                    )}
                   </td>
                   <td className={styles.manage_btn}>
-                    {workDate?.order === listData.order &&
-                      workType === "delete" &&
+                    {workData?.order === listData.order &&
+                      (workType === "delete" || workType === "edit") &&
                       workState === "loading" && (
                         <Spinner
                           animation="border"
@@ -164,20 +189,41 @@ const TodoList = () => {
                           <span className="visually-hidden">Loading...</span>
                         </Spinner>
                       )}
-                    <Button
-                      type="button"
-                      variant="primary"
-                      onClick={editContent(listData.order)}
-                    >
-                      수정
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="danger"
-                      onClick={deleteContent(listData.order)}
-                    >
-                      X
-                    </Button>
+                    {editingData ? (
+                      <>
+                        <Button
+                          type="button"
+                          variant="primary"
+                          onClick={onClickEditComplete(listData)}
+                        >
+                          확인
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="primary"
+                          onClick={() => setEditingData(null)}
+                        >
+                          취소
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          type="button"
+                          variant="primary"
+                          onClick={editContent(listData)}
+                        >
+                          수정
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="danger"
+                          onClick={deleteContent(listData)}
+                        >
+                          X
+                        </Button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}

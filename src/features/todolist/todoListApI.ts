@@ -19,3 +19,14 @@ export async function deleteFetcher() {
     console.error("add failed!");
   });
 }
+
+export async function editFetcher() {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      console.log("edit complete!");
+      resolve(true);
+    }, 500);
+  }).catch(() => {
+    console.error("edit failed!");
+  });
+}

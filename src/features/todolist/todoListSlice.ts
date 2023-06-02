@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { addFetcher, deleteFetcher } from "./todoListApI";
+import { addFetcher, deleteFetcher, editFetcher } from "./todoListApI";
 
 export interface addListAsyncParam {
   date: string;
@@ -7,9 +7,9 @@ export interface addListAsyncParam {
 }
 
 export interface Content {
-  order?: number;
-  date?: string;
-  content?: string;
+  order: number;
+  date: string;
+  content: string;
 }
 
 export interface todoListState {
@@ -18,7 +18,7 @@ export interface todoListState {
   dataList: Content[];
   workType: string;
   workState: string;
-  workDate: Content;
+  workData: Content | null;
 }
 
 const initialState: todoListState = {
@@ -27,7 +27,7 @@ const initialState: todoListState = {
   dataList: [], // 데이터 리스트 저장
   workType: "", // 작업 종류 add, edit, delete
   workState: "idle", // 작업 상태
-  workDate: {}, // 작업 중인 데이터
+  workData: null, // 작업 중인 데이터
 };
 
 export const addListAsync = createAsyncThunk<
@@ -46,6 +46,14 @@ export const deleteListAsync = createAsyncThunk<number, number>(
   }
 );
 
+export const editListAsync = createAsyncThunk<Content, Content>(
+  "todoList/editList",
+  async (data) => {
+    await editFetcher();
+    return data;
+  }
+);
+
 export const todoListSlice = createSlice({
   name: "todoList",
   initialState,
@@ -60,7 +68,14 @@ export const todoListSlice = createSlice({
       return {
         ...state,
         workType: "delete",
-        workDate: { order: actions.payload.order },
+        workData: { ...actions.payload },
+      };
+    },
+    editList: (state, actions) => {
+      return {
+        ...state,
+        workType: "edit",
+        workData: { ...actions.payload },
       };
     },
   },
@@ -114,10 +129,37 @@ export const todoListSlice = createSlice({
           workType: "idle",
           workState: "failed",
         };
+      })
+      .addCase(editListAsync.pending, (state) => {
+        return {
+          ...state,
+          workState: "loading",
+        };
+      })
+      .addCase(editListAsync.fulfilled, (state, actions) => {
+        return {
+          ...state,
+          workType: "idle",
+          workState: "success",
+          dataList: state.dataList.map((data) => {
+            if (data.order === actions.payload.order) {
+              return { ...data, content: actions.payload.content };
+            } else {
+              return data;
+            }
+          }),
+        };
+      })
+      .addCase(editListAsync.rejected, (state) => {
+        return {
+          ...state,
+          workType: "idle",
+          workState: "failed",
+        };
       });
   },
 });
 
-export const { addList, deleteList } = todoListSlice.actions;
+export const { addList, deleteList, editList } = todoListSlice.actions;
 
 export default todoListSlice.reducer;
